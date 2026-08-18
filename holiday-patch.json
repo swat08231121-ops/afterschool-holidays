@@ -1,0 +1,9 @@
+{
+  "schema": "after-school-holidays-v1",
+  "version": "2026.08.18.1",
+  "referenceDate": "2026-08-18",
+  "source": "방과후학교 통합관리시스템 중앙 공휴일 패치",
+  "replaceYears": [],
+  "holidays": [],
+  "removeDates": []
+}
