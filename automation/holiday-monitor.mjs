@@ -72,10 +72,17 @@ function expandDateText(year, raw, name) {
   return m?[{date:iso(year,Number(m[1]),Number(m[2])),name}]:[];
 }
 function parseKasiHolidayTable(html, year) {
-  const start=html.indexOf('국경일과 공휴일');
-  if(start<0) return {ok:false,reason:'국경일과 공휴일 표를 찾지 못했습니다.',holidays:{},confidence:0};
-  let end=html.indexOf('일요일',start+10); if(end<0) end=Math.min(html.length,start+25000);
-  const block=html.slice(start,end);
+  const yearToken=`${year}년 달력자료`;
+  const yearStart=html.indexOf(yearToken);
+  if(yearStart<0) return {ok:false,reason:`${year}년 달력자료 구간을 찾지 못했습니다.`,holidays:{},confidence:0};
+  const nextToken=`${year-1}년 달력자료`;
+  let yearEnd=html.indexOf(nextToken,yearStart+yearToken.length);
+  if(yearEnd<0) yearEnd=Math.min(html.length,yearStart+180000);
+  const yearBlock=html.slice(yearStart,yearEnd);
+  const localStart=yearBlock.indexOf('국경일과 공휴일');
+  if(localStart<0) return {ok:false,reason:`${year}년 국경일과 공휴일 표를 찾지 못했습니다.`,holidays:{},confidence:0};
+  let localEnd=yearBlock.indexOf('일요일',localStart+10); if(localEnd<0) localEnd=Math.min(yearBlock.length,localStart+30000);
+  const block=yearBlock.slice(localStart,localEnd);
   const rows=[...block.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)];
   const holidays={};
   let pairCount=0;
