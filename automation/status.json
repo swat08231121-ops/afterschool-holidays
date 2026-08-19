@@ -1,0 +1,10 @@
+{
+  "schema": "after-school-holiday-monitor-status-v1",
+  "status": "initializing",
+  "checkedAt": "",
+  "summary": "자동검증 첫 실행 대기 중",
+  "categories": [],
+  "items": [],
+  "autoApplied": [],
+  "issuePage": "https://github.com/swat08231121-ops/afterschool-holidays/issues"
+}
