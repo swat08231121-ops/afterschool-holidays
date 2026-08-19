@@ -1,0 +1,58 @@
+name: Holiday Official Source Monitor
+
+on:
+  schedule:
+    - cron: '17 9 * * *'
+      timezone: 'Asia/Seoul'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: holiday-official-source-monitor
+  cancel-in-progress: false
+
+jobs:
+  verify-and-patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Verify official sources and build safe patch
+        run: node automation/holiday-monitor.mjs
+
+      - name: Commit verified data changes
+        shell: bash
+        run: |
+          git config user.name "afterschool-holiday-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add holiday-patch.json automation/source-state.json automation/heartbeat.json
+          if git diff --cached --quiet; then
+            echo "No repository data changes."
+          else
+            git commit -m "chore: verify official holiday sources"
+            git push
+          fi
+
+      - name: Open or update review issue when automatic safety check stops
+        if: ${{ hashFiles('automation/review-required.md') != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          TITLE="공휴일 자동검증 검토 필요"
+          NUMBER="$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          if [ -n "$NUMBER" ]; then
+            gh issue comment "$NUMBER" --body-file automation/review-required.md
+          else
+            gh issue create --title "$TITLE" --body-file automation/review-required.md
+          fi
