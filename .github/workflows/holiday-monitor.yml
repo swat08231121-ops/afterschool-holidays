@@ -35,7 +35,7 @@ jobs:
         run: |
           git config user.name "afterschool-holiday-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add holiday-patch.json automation/source-state.json automation/heartbeat.json
+          git add holiday-patch.json automation/source-state.json automation/heartbeat.json automation/status.json
           if git diff --cached --quiet; then
             echo "No repository data changes."
           else
@@ -55,4 +55,17 @@ jobs:
             gh issue comment "$NUMBER" --body-file automation/review-required.md
           else
             gh issue create --title "$TITLE" --body-file automation/review-required.md
+          fi
+
+      - name: Close review issue when status returns to normal
+        if: ${{ hashFiles('automation/review-required.md') == '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          TITLE="공휴일 자동검증 검토 필요"
+          NUMBER="$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          if [ -n "$NUMBER" ]; then
+            gh issue comment "$NUMBER" --body "자동검증 상태가 정상으로 돌아와 이 Issue를 자동으로 닫습니다."
+            gh issue close "$NUMBER" --reason completed
           fi
