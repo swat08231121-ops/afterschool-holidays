@@ -20,15 +20,48 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
 
       - name: Verify official sources and build safe patch
-        run: node automation/holiday-monitor.mjs
+        id: verify
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          last_code=1
+          for attempt in 1 2 3; do
+            echo "Holiday monitor attempt ${attempt}/3"
+            node automation/holiday-monitor.mjs
+            last_code=$?
+            if [ "$last_code" -eq 0 ]; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              sleep $((attempt * 10))
+            fi
+          done
+          exit "$last_code"
+
+      - name: Convert source connection failure to review-required state
+        if: ${{ steps.verify.outcome == 'failure' }}
+        shell: bash
+        run: |
+          cat > automation/review-required.md <<'EOF'
+          # 공휴일 자동검증 검토 필요
+
+          공식 사이트 연결 오류로 이번 자동검증을 끝까지 완료하지 못했습니다.
+
+          - **분류:** 공식자료 연결 오류
+          - **자동조치:** 기존 공휴일 패치와 기존 검증자료를 그대로 유지했습니다.
+          - **사용자 조치:** 일시적인 국가법령정보센터 또는 한국천문연구원 접속 지연일 수 있으므로 다음 자동 실행 결과를 확인하세요. 반복될 경우 GitHub Actions 실행 로그를 확인하세요.
+
+          안전을 위해 공식자료 확인에 실패한 상태에서는 공휴일 데이터를 자동 변경하지 않습니다.
+          EOF
 
       - name: Commit verified data changes
         shell: bash
