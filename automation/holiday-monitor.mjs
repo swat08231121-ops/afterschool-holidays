@@ -21,6 +21,7 @@ const iso=(y,m,d)=>`${y}-${pad2(m)}-${pad2(d)}`;
 const kstNow=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
 const todayKST=()=>{const d=kstNow();return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`};
 const monthKST=()=>todayKST().slice(0,7);
+const shortError=error=>String(error?.cause?.code||error?.code||error?.message||error||'unknown error').replace(/\s+/g,' ').slice(0,180);
 
 function decodeHtml(text=''){
   return String(text)
@@ -33,14 +34,35 @@ function stripTags(text=''){
   return decodeHtml(String(text).replace(/<br\s*\/?\s*>/gi,' ').replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim();
 }
 function normalizeSourceText(text=''){return stripTags(text).replace(/\s+/g,' ').trim()}
+
 async function fetchText(url,timeoutMs=15000){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
   try{
-    const res=await fetch(url,{redirect:'follow',cache:'no-store',signal:controller.signal,headers:{'User-Agent':'afterschool-holiday-monitor/1.1','Accept-Language':'ko-KR,ko;q=0.9'}});
+    const res=await fetch(url,{redirect:'follow',cache:'no-store',signal:controller.signal,headers:{
+      'User-Agent':'afterschool-holiday-monitor/1.2',
+      'Accept-Language':'ko-KR,ko;q=0.9',
+      'Accept':'text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8'
+    }});
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     return await res.text();
   }finally{clearTimeout(timer)}
 }
+
+async function tryFetchText(url,label,attempts=2){
+  let lastError=null;
+  for(let attempt=1;attempt<=attempts;attempt++){
+    try{
+      const text=await fetchText(url);
+      return {ok:true,text,error:'',label};
+    }catch(error){
+      lastError=error;
+      console.warn(`[SOURCE-WARN] ${label} attempt ${attempt}/${attempts}: ${shortError(error)}`);
+      if(attempt<attempts)await new Promise(resolve=>setTimeout(resolve,attempt*1500));
+    }
+  }
+  return {ok:false,text:'',error:shortError(lastError),label};
+}
+
 function cleanHolidayName(name=''){
   const s=stripTags(name).replace(/[＊*]+/g,'').replace(/\s+/g,' ').trim();
   return ({'1월 1일':'신정','3.1절':'삼일절','3·1절':'삼일절','어린이 날':'어린이날','부처님 오신 날':'부처님오신날','기독탄신일':'성탄절'})[s]||s;
@@ -111,7 +133,7 @@ function writeStatus(items,approved){
     schema:'after-school-holiday-monitor-status-v1',
     status:reviewRequired?'review-required':'normal',
     checkedAt:todayKST(),
-    summary:reviewRequired?`검토 필요 ${items.length}건`:'정상 · 검토 필요 항목 없음',
+    summary:reviewRequired?`검토 필요 ${items.length}건 · 기존 공휴일 자료 유지`:'정상 · 검토 필요 항목 없음',
     categories,
     items,
     autoApplied:(approved||[]).map(x=>({date:x.date,name:x.name})),
@@ -124,22 +146,54 @@ async function main(){
   const years=[];for(let y=currentYear;y<=Math.min(MAX_YEAR,currentYear+3);y++)years.push(y);
   const review=[];
 
-  const lawHtml=await fetchText(LAW_URL),lawText=normalizeSourceText(lawHtml);
-  if(!lawText.includes('관공서의 공휴일에 관한 규정')||!lawText.includes('대체공휴일'))throw new Error('국가법령정보센터 공휴일 규정 본문을 확인하지 못했습니다.');
-  const lawHash=sha256(lawText),previousLawHash=state.sources?.law?.hash||'',lawChanged=!!(state.initialized&&previousLawHash&&previousLawHash!==lawHash);
-  if(lawChanged)review.push(reviewItem('법령변경','국가법령정보센터의 「관공서의 공휴일에 관한 규정」 본문 변경을 감지했습니다.','개정된 조문과 시행일을 확인한 뒤 프로그램 공휴일 계산규칙 변경이 필요한지 검토하세요.'));
+  const previousLaw=state.sources?.law||{};
+  const lawResult=await tryFetchText(LAW_URL,'국가법령정보센터',2);
+  let lawAvailable=false,lawHash=previousLaw.hash||'',lawChanged=false,lawError='';
+  if(lawResult.ok){
+    const lawText=normalizeSourceText(lawResult.text);
+    if(lawText.includes('관공서의 공휴일에 관한 규정')&&lawText.includes('대체공휴일')){
+      lawAvailable=true;
+      lawHash=sha256(lawText);
+      lawChanged=!!(state.initialized&&previousLaw.hash&&previousLaw.hash!==lawHash);
+      if(lawChanged)review.push(reviewItem('법령변경','국가법령정보센터의 「관공서의 공휴일에 관한 규정」 본문 변경을 감지했습니다.','개정된 조문과 시행일을 확인한 뒤 프로그램 공휴일 계산규칙 변경이 필요한지 검토하세요.'));
+    }else{
+      lawError='공휴일 규정 본문 확인 실패';
+      review.push(reviewItem('공식자료 확인 지연','국가법령정보센터에는 접속했지만 공휴일 규정 본문을 정상적으로 확인하지 못했습니다.','다음 자동검증에서 다시 확인합니다. 그동안 기존 공휴일 자료는 그대로 유지됩니다.'));
+    }
+  }else{
+    lawError=lawResult.error;
+    review.push(reviewItem('공식자료 연결 지연','국가법령정보센터가 GitHub 자동검증 서버의 요청에 일시적으로 응답하지 않았습니다.','별도 조치 없이 다음 자동검증을 기다리셔도 됩니다. 한국천문연구원 자료 검증은 계속 진행합니다.'));
+  }
 
-  const nextYears={},observedAdditions=[],patchMap=currentPatchMap(patch);
+  const nextYears={...state.years},observedAdditions=[],patchMap=currentPatchMap(patch);
+  let successfulYears=0;
   for(const year of years){
-    const [almanacHtml,calendarHtml]=await Promise.all([fetchText(KASI_ALMANAC(year)),fetchText(KASI_CALENDAR(year))]);
-    const alm=almanacStatus(almanacHtml,year),parsed=parseKasiHolidayTable(calendarHtml,year),calendarHash=sha256(JSON.stringify(parsed.holidays)),previous=state.years?.[year]||{};
+    const previous=state.years?.[year]||{};
+    const [almanacResult,calendarResult]=await Promise.all([
+      tryFetchText(KASI_ALMANAC(year),`한국천문연구원 ${year}년 월력요항`,2),
+      tryFetchText(KASI_CALENDAR(year),`한국천문연구원 ${year}년 달력자료`,2)
+    ]);
+
+    if(!almanacResult.ok||!calendarResult.ok){
+      const failed=[];
+      if(!almanacResult.ok)failed.push('월력요항');
+      if(!calendarResult.ok)failed.push('달력자료');
+      review.push(reviewItem('공식자료 연결 지연',`${year}년 한국천문연구원 ${failed.join('·')} 확인이 일시적으로 지연되고 있습니다.`,'다음 자동검증에서 자동으로 다시 확인합니다. 확인 전에는 기존 자료를 유지합니다.'));
+      nextYears[year]={...previous,lastChecked:todayKST(),available:false,lastError:[almanacResult.error,calendarResult.error].filter(Boolean).join(' / ')};
+      continue;
+    }
+
+    successfulYears++;
+    const alm=almanacStatus(almanacResult.text,year),parsed=parseKasiHolidayTable(calendarResult.text,year),calendarHash=sha256(JSON.stringify(parsed.holidays));
     const sourceChanged=!!(state.initialized&&previous.calendarHash&&previous.calendarHash!==calendarHash),officialBecameAvailable=!!(state.initialized&&!previous.official&&alm.official);
-    nextYears[year]={official:alm.official,almanacHash:alm.hash,calendarHash,parseOk:parsed.ok,holidayCount:Object.keys(parsed.holidays).length,observedHolidayMap:parsed.holidays};
-    if(!state.initialized||!(sourceChanged||officialBecameAvailable))continue;
+    nextYears[year]={official:alm.official,almanacHash:alm.hash,calendarHash,parseOk:parsed.ok,holidayCount:Object.keys(parsed.holidays).length,observedHolidayMap:parsed.holidays,lastChecked:todayKST(),available:true,lastError:''};
+
     if(!parsed.ok){
       review.push(reviewItem('공식자료 불일치',`${year}년 한국천문연구원 달력자료를 정상적인 공휴일 표로 해석하지 못했습니다. (${parsed.reason||'파싱 신뢰도 부족'})`,'한국천문연구원 페이지 구조 변경 또는 자료 오류 여부를 확인하고 자동검증기 파싱규칙을 점검하세요.'));
       continue;
     }
+    if(!state.initialized||!(sourceChanged||officialBecameAvailable))continue;
+
     const prevObserved=previous.observedHolidayMap||{};
     if(sourceChanged){
       for(const [date,name] of Object.entries(parsed.holidays))if(!prevObserved[date]&&!patchMap[date])observedAdditions.push({year,date,name,official:alm.official,reason:'source-changed'});
@@ -155,7 +209,7 @@ async function main(){
   }
 
   let approved=[];
-  if(!lawChanged){
+  if(lawAvailable&&!lawChanged){
     for(const c of observedAdditions){
       if(!c.official){
         review.push(reviewItem('공식자료 불일치',`${c.date} ${c.name}가 달력자료에서 새로 감지됐지만 해당 연도의 공식 월력요항 게재가 확인되지 않았습니다.`,'공식 월력요항 발표 후 다시 확인하세요. 발표 전에는 자동 적용하지 않습니다.'));
@@ -167,7 +221,10 @@ async function main(){
       }
       approved.push(c);
     }
+  }else if(observedAdditions.length){
+    review.push(reviewItem('자동반영 보류',`신규 공휴일 후보 ${observedAdditions.length}건을 감지했지만 국가법령정보센터 확인이 완료되지 않아 자동반영을 보류했습니다.`,'다음 자동검증에서 법령 확인까지 완료되면 안전조건에 따라 다시 판단합니다.'));
   }
+
   approved=[...new Map(approved.map(x=>[x.date,x])).values()];
   if(approved.length>MAX_AUTO_ADDITIONS){
     review.push(reviewItem('다량변경',`한 번에 ${approved.length}건의 신규 공휴일이 감지되어 안전한 자동 반영 한도(${MAX_AUTO_ADDITIONS}건)를 초과했습니다.`,'공식자료에 대규모 개정이 있었는지 확인하고 변경 건 전체를 검토하세요.','신규 공휴일 자동추가를 전부 보류하고 기존 중앙 패치를 유지합니다.'));
@@ -183,18 +240,28 @@ async function main(){
     writeJSON(PATCH_FILE,patch);console.log(`[AUTO-PATCH] ${approved.length}건 적용:`,approved);
   }
 
-  const nextState={schema:'after-school-holiday-source-state-v1',initialized:true,sources:{law:{url:LAW_URL,hash:lawHash}},years:nextYears,lastResult:{date:todayKST(),autoApplied:approved.map(x=>({date:x.date,name:x.name})),reviewRequired:review.length>0,categories:[...new Set(review.map(x=>x.category))]}};
+  const nextInitialized=!!(state.initialized||successfulYears>0);
+  const nextState={
+    schema:'after-school-holiday-source-state-v1',
+    initialized:nextInitialized,
+    sources:{
+      ...(state.sources||{}),
+      law:{url:LAW_URL,hash:lawHash,available:lawAvailable,lastChecked:todayKST(),lastError:lawError}
+    },
+    years:nextYears,
+    lastResult:{date:todayKST(),autoApplied:approved.map(x=>({date:x.date,name:x.name})),reviewRequired:review.length>0,categories:[...new Set(review.map(x=>x.category))],successfulYears}
+  };
   const meaningfulChanged=JSON.stringify({...state,lastResult:undefined})!==JSON.stringify({...nextState,lastResult:undefined});
   if(!state.initialized||meaningfulChanged||approved.length||review.length)writeJSON(STATE_FILE,nextState);
   if(heartbeat.month!==monthKST())writeJSON(HEARTBEAT_FILE,{schema:'after-school-holiday-heartbeat-v1',month:monthKST(),checkedBy:'GitHub Actions'});
   writeStatus(review,approved);writeReview(review);
-  console.log(`[DONE] initialized=${state.initialized} approved=${approved.length} review=${review.length}`);
+  console.log(`[DONE] initialized=${nextInitialized} successfulYears=${successfulYears} lawAvailable=${lawAvailable} approved=${approved.length} review=${review.length}`);
 }
 
 main().catch(error=>{
   console.error(error);
   try{
-    writeJSON(STATUS_FILE,{schema:'after-school-holiday-monitor-status-v1',status:'error',checkedAt:todayKST(),summary:'자동검증 실행 오류',categories:['자동검증 오류'],items:[reviewItem('자동검증 오류',String(error?.message||error),'GitHub Actions 실행 로그와 공식사이트 접속 상태를 확인하세요.')],autoApplied:[],issuePage:ISSUE_PAGE});
+    writeJSON(STATUS_FILE,{schema:'after-school-holiday-monitor-status-v1',status:'error',checkedAt:todayKST(),summary:'자동검증 프로그램 내부 오류',categories:['자동검증 프로그램 오류'],items:[reviewItem('자동검증 프로그램 오류',String(error?.message||error),'자동검증 코드 자체의 오류이므로 GitHub Actions 실행 로그를 확인하세요.')],autoApplied:[],issuePage:ISSUE_PAGE});
   }catch{}
   process.exit(1);
 });
