@@ -1,6 +1,12 @@
 name: Holiday Official Source Monitor
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/holiday-monitor.yml'
+      - 'automation/holiday-monitor.mjs'
   schedule:
     - cron: '17 9 * * *'
       timezone: 'Asia/Seoul'
