@@ -1,10 +1,19 @@
 {
   "schema": "after-school-holiday-monitor-status-v1",
-  "status": "initializing",
-  "checkedAt": "",
-  "summary": "자동검증 첫 실행 대기 중",
-  "categories": [],
-  "items": [],
+  "status": "error",
+  "checkedAt": "2026-08-21",
+  "summary": "자동검증 실행 오류",
+  "categories": [
+    "자동검증 오류"
+  ],
+  "items": [
+    {
+      "category": "자동검증 오류",
+      "detail": "fetch failed",
+      "autoAction": "중앙 공휴일 패치를 변경하지 않고 기존 검증자료를 유지합니다.",
+      "userAction": "GitHub Actions 실행 로그와 공식사이트 접속 상태를 확인하세요."
+    }
+  ],
   "autoApplied": [],
   "issuePage": "https://github.com/swat08231121-ops/afterschool-holidays/issues"
 }
