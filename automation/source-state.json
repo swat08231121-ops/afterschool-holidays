@@ -7,7 +7,7 @@
       "hash": "",
       "available": false,
       "lastChecked": "2026-08-21",
-      "lastError": "UND_ERR_CONNECT_TIMEOUT"
+      "lastError": "공휴일 규정 본문 확인 실패"
     }
   },
   "years": {
@@ -96,6 +96,7 @@
     "autoApplied": [],
     "reviewRequired": true,
     "categories": [
+      "공식자료 확인 지연",
       "공식자료 연결 지연"
     ],
     "successfulYears": 2
