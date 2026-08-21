@@ -1,17 +1,29 @@
 {
   "schema": "after-school-holiday-monitor-status-v1",
-  "status": "error",
+  "status": "review-required",
   "checkedAt": "2026-08-21",
-  "summary": "자동검증 실행 오류",
+  "summary": "검토 필요 3건 · 기존 공휴일 자료 유지",
   "categories": [
-    "자동검증 오류"
+    "공식자료 연결 지연"
   ],
   "items": [
     {
-      "category": "자동검증 오류",
-      "detail": "fetch failed",
+      "category": "공식자료 연결 지연",
+      "detail": "국가법령정보센터가 GitHub 자동검증 서버의 요청에 일시적으로 응답하지 않았습니다.",
       "autoAction": "중앙 공휴일 패치를 변경하지 않고 기존 검증자료를 유지합니다.",
-      "userAction": "GitHub Actions 실행 로그와 공식사이트 접속 상태를 확인하세요."
+      "userAction": "별도 조치 없이 다음 자동검증을 기다리셔도 됩니다. 한국천문연구원 자료 검증은 계속 진행합니다."
+    },
+    {
+      "category": "공식자료 연결 지연",
+      "detail": "2028년 한국천문연구원 월력요항 확인이 일시적으로 지연되고 있습니다.",
+      "autoAction": "중앙 공휴일 패치를 변경하지 않고 기존 검증자료를 유지합니다.",
+      "userAction": "다음 자동검증에서 자동으로 다시 확인합니다. 확인 전에는 기존 자료를 유지합니다."
+    },
+    {
+      "category": "공식자료 연결 지연",
+      "detail": "2029년 한국천문연구원 월력요항·달력자료 확인이 일시적으로 지연되고 있습니다.",
+      "autoAction": "중앙 공휴일 패치를 변경하지 않고 기존 검증자료를 유지합니다.",
+      "userAction": "다음 자동검증에서 자동으로 다시 확인합니다. 확인 전에는 기존 자료를 유지합니다."
     }
   ],
   "autoApplied": [],
