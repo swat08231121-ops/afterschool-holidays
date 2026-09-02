@@ -1,7 +1,7 @@
 {
   "schema": "after-school-holiday-monitor-status-v1",
   "status": "review-required",
-  "checkedAt": "2026-09-01",
+  "checkedAt": "2026-09-02",
   "summary": "검토 필요 5건 · 기존 공휴일 자료 유지",
   "categories": [
     "공식자료 확인 지연",
