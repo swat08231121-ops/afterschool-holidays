@@ -7,7 +7,17 @@
       "hash": "",
       "available": false,
       "lastChecked": "2026-09-03",
-      "lastError": "UND_ERR_CONNECT_TIMEOUT"
+      "failureStreak": 1,
+      "lastFailureDate": "2026-09-03",
+      "lastError": "공휴일 규정 본문 확인 실패"
+    },
+    "kasiCalendar": {
+      "url": "https://astro.kasi.re.kr/life/post/calendarData",
+      "available": false,
+      "lastChecked": "2026-09-03",
+      "failureStreak": 1,
+      "lastFailureDate": "2026-09-03",
+      "lastError": "HTTP 500"
     }
   },
   "years": {
@@ -42,7 +52,9 @@
       },
       "lastChecked": "2026-09-03",
       "available": false,
-      "lastError": "HTTP 500 / HTTP 500"
+      "lastError": "HTTP 500",
+      "almanacFailureStreak": 1,
+      "almanacLastFailureDate": "2026-09-03"
     },
     "2027": {
       "official": true,
@@ -78,26 +90,24 @@
       },
       "lastChecked": "2026-09-03",
       "available": false,
-      "lastError": "HTTP 500 / HTTP 500"
+      "lastError": "HTTP 500",
+      "almanacFailureStreak": 1,
+      "almanacLastFailureDate": "2026-09-03"
     },
     "2028": {
       "lastChecked": "2026-09-03",
       "available": false,
-      "lastError": "HTTP 500 / HTTP 500"
-    },
-    "2029": {
-      "lastChecked": "2026-09-03",
-      "available": false,
-      "lastError": "HTTP 500 / HTTP 500"
+      "lastError": "HTTP 500",
+      "almanacFailureStreak": 0,
+      "almanacLastFailureDate": ""
     }
   },
   "lastResult": {
     "date": "2026-09-03",
     "autoApplied": [],
-    "reviewRequired": true,
-    "categories": [
-      "공식자료 연결 지연"
-    ],
-    "successfulYears": 0
+    "reviewRequired": false,
+    "categories": [],
+    "successfulYears": 0,
+    "warnings": 4
   }
 }
