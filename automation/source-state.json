@@ -6,17 +6,17 @@
       "url": "https://www.law.go.kr/LSW/lsInfoP.do?ancYnChk=0&lsId=002404",
       "hash": "",
       "available": false,
-      "lastChecked": "2026-09-04",
-      "failureStreak": 2,
-      "lastFailureDate": "2026-09-04",
+      "lastChecked": "2026-09-05",
+      "failureStreak": 3,
+      "lastFailureDate": "2026-09-05",
       "lastError": "UND_ERR_CONNECT_TIMEOUT"
     },
     "kasiCalendar": {
       "url": "https://astro.kasi.re.kr/life/post/calendarData",
       "available": false,
-      "lastChecked": "2026-09-04",
-      "failureStreak": 2,
-      "lastFailureDate": "2026-09-04",
+      "lastChecked": "2026-09-05",
+      "failureStreak": 3,
+      "lastFailureDate": "2026-09-05",
       "lastError": "HTTP 500"
     }
   },
@@ -50,11 +50,11 @@
         "2026-06-06": "현충일",
         "2026-07-17": "제헌절"
       },
-      "lastChecked": "2026-09-04",
+      "lastChecked": "2026-09-05",
       "available": false,
       "lastError": "HTTP 500",
-      "almanacFailureStreak": 2,
-      "almanacLastFailureDate": "2026-09-04"
+      "almanacFailureStreak": 3,
+      "almanacLastFailureDate": "2026-09-05"
     },
     "2027": {
       "official": true,
@@ -88,14 +88,14 @@
         "2027-07-17": "제헌절",
         "2027-07-19": "대체공휴일(제헌절)"
       },
-      "lastChecked": "2026-09-04",
+      "lastChecked": "2026-09-05",
       "available": false,
       "lastError": "HTTP 500",
-      "almanacFailureStreak": 2,
-      "almanacLastFailureDate": "2026-09-04"
+      "almanacFailureStreak": 3,
+      "almanacLastFailureDate": "2026-09-05"
     },
     "2028": {
-      "lastChecked": "2026-09-04",
+      "lastChecked": "2026-09-05",
       "available": false,
       "lastError": "HTTP 500",
       "almanacFailureStreak": 0,
@@ -103,10 +103,12 @@
     }
   },
   "lastResult": {
-    "date": "2026-09-04",
+    "date": "2026-09-05",
     "autoApplied": [],
-    "reviewRequired": false,
-    "categories": [],
+    "reviewRequired": true,
+    "categories": [
+      "공식자료 연결 지속 실패"
+    ],
     "successfulYears": 0,
     "warnings": 4
   }

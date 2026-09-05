@@ -1,32 +1,59 @@
 {
   "schema": "after-school-holiday-monitor-status-v1",
-  "status": "normal",
-  "checkedAt": "2026-09-04",
-  "summary": "정상 · 공식자료 재확인 예정 4건 · 기존 자료 유지",
-  "categories": [],
-  "items": [],
+  "status": "review-required",
+  "checkedAt": "2026-09-05",
+  "summary": "검토 필요 4건 · 기존 공휴일 자료 유지",
+  "categories": [
+    "공식자료 연결 지속 실패"
+  ],
+  "items": [
+    {
+      "category": "공식자료 연결 지속 실패",
+      "detail": "국가법령정보센터 연결이 3일 연속 실패했습니다. 마지막 오류: UND_ERR_CONNECT_TIMEOUT",
+      "autoAction": "중앙 공휴일 패치를 변경하지 않고 기존 검증자료를 유지합니다.",
+      "userAction": "GitHub Actions 실행 로그와 국가법령정보센터 접근 상태를 확인하세요."
+    },
+    {
+      "category": "공식자료 연결 지속 실패",
+      "detail": "한국천문연구원 달력자료 연결이 3일 연속 실패했습니다. 마지막 오류: HTTP 500",
+      "autoAction": "중앙 공휴일 패치를 변경하지 않고 기존 검증자료를 유지합니다.",
+      "userAction": "GitHub Actions 실행 로그와 한국천문연구원 접근 상태를 확인하세요."
+    },
+    {
+      "category": "공식자료 연결 지속 실패",
+      "detail": "2026년 한국천문연구원 월력요항 확인이 3일 연속 실패했습니다.",
+      "autoAction": "중앙 공휴일 패치를 변경하지 않고 기존 검증자료를 유지합니다.",
+      "userAction": "GitHub Actions 실행 로그와 한국천문연구원 월력요항 페이지를 확인하세요."
+    },
+    {
+      "category": "공식자료 연결 지속 실패",
+      "detail": "2027년 한국천문연구원 월력요항 확인이 3일 연속 실패했습니다.",
+      "autoAction": "중앙 공휴일 패치를 변경하지 않고 기존 검증자료를 유지합니다.",
+      "userAction": "GitHub Actions 실행 로그와 한국천문연구원 월력요항 페이지를 확인하세요."
+    }
+  ],
   "warnings": [
     {
       "category": "공식자료 재확인 예정",
-      "detail": "국가법령정보센터 연결을 완료하지 못했습니다. (UND_ERR_CONNECT_TIMEOUT, 연속 2일)",
+      "detail": "국가법령정보센터 연결을 완료하지 못했습니다. (UND_ERR_CONNECT_TIMEOUT, 연속 3일)",
       "autoAction": "기존 공휴일 패치와 마지막 정상 검증자료를 그대로 유지합니다.",
       "userAction": "자동검증이 다음 실행에서 다시 확인합니다. 3일 연속 실패할 때만 검토 Issue로 전환됩니다."
     },
     {
       "category": "공식자료 재확인 예정",
-      "detail": "한국천문연구원 달력자료 연결을 완료하지 못했습니다. (HTTP 500, 연속 2일)",
+      "detail": "한국천문연구원 달력자료 연결을 완료하지 못했습니다. (HTTP 500, 연속 3일)",
       "autoAction": "기존 공휴일 패치와 마지막 정상 검증자료를 그대로 유지합니다.",
       "userAction": "자동검증이 다음 실행에서 다시 확인합니다. 3일 연속 실패할 때만 검토 Issue로 전환됩니다."
     },
     {
       "category": "공식자료 재확인 예정",
-      "detail": "2026년 한국천문연구원 월력요항 확인을 완료하지 못했습니다. (HTTP 500, 연속 2일)",
+      "detail": "2026년 한국천문연구원 월력요항 확인을 완료하지 못했습니다. (HTTP 500, 연속 3일)",
       "autoAction": "기존 공휴일 패치와 마지막 정상 검증자료를 그대로 유지합니다.",
       "userAction": "자동검증이 다음 실행에서 다시 확인합니다. 3일 연속 실패할 때만 검토 Issue로 전환됩니다."
     },
     {
       "category": "공식자료 재확인 예정",
-      "detail": "2027년 한국천문연구원 월력요항 확인을 완료하지 못했습니다. (HTTP 500, 연속 2일)",
+      "detail": "2027년 한국천문연구원 월력요항 확인을 완료하지 못했습니다. (HTTP 500, 연속 3일)",
       "autoAction": "기존 공휴일 패치와 마지막 정상 검증자료를 그대로 유지합니다.",
       "userAction": "자동검증이 다음 실행에서 다시 확인합니다. 3일 연속 실패할 때만 검토 Issue로 전환됩니다."
     }
