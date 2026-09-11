@@ -6,17 +6,17 @@
       "url": "https://www.law.go.kr/LSW/lsInfoP.do?ancYnChk=0&lsId=002404",
       "hash": "",
       "available": false,
-      "lastChecked": "2026-09-10",
-      "failureStreak": 8,
-      "lastFailureDate": "2026-09-10",
+      "lastChecked": "2026-09-11",
+      "failureStreak": 9,
+      "lastFailureDate": "2026-09-11",
       "lastError": "공휴일 규정 본문 확인 실패"
     },
     "kasiCalendar": {
       "url": "https://astro.kasi.re.kr/life/post/calendarData",
       "available": false,
-      "lastChecked": "2026-09-10",
-      "failureStreak": 8,
-      "lastFailureDate": "2026-09-10",
+      "lastChecked": "2026-09-11",
+      "failureStreak": 9,
+      "lastFailureDate": "2026-09-11",
       "lastError": "HTTP 500"
     }
   },
@@ -50,11 +50,11 @@
         "2026-06-06": "현충일",
         "2026-07-17": "제헌절"
       },
-      "lastChecked": "2026-09-10",
+      "lastChecked": "2026-09-11",
       "available": false,
       "lastError": "HTTP 500",
-      "almanacFailureStreak": 8,
-      "almanacLastFailureDate": "2026-09-10"
+      "almanacFailureStreak": 9,
+      "almanacLastFailureDate": "2026-09-11"
     },
     "2027": {
       "official": true,
@@ -88,14 +88,14 @@
         "2027-07-17": "제헌절",
         "2027-07-19": "대체공휴일(제헌절)"
       },
-      "lastChecked": "2026-09-10",
+      "lastChecked": "2026-09-11",
       "available": false,
       "lastError": "HTTP 500",
-      "almanacFailureStreak": 8,
-      "almanacLastFailureDate": "2026-09-10"
+      "almanacFailureStreak": 9,
+      "almanacLastFailureDate": "2026-09-11"
     },
     "2028": {
-      "lastChecked": "2026-09-10",
+      "lastChecked": "2026-09-11",
       "available": false,
       "lastError": "HTTP 500",
       "almanacFailureStreak": 0,
@@ -103,7 +103,7 @@
     }
   },
   "lastResult": {
-    "date": "2026-09-10",
+    "date": "2026-09-11",
     "autoApplied": [],
     "reviewRequired": true,
     "categories": [
