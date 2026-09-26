@@ -6,17 +6,17 @@
       "url": "https://www.law.go.kr/LSW/lsInfoP.do?ancYnChk=0&lsId=002404",
       "hash": "",
       "available": false,
-      "lastChecked": "2026-09-25",
-      "failureStreak": 23,
-      "lastFailureDate": "2026-09-25",
-      "lastError": "UND_ERR_CONNECT_TIMEOUT"
+      "lastChecked": "2026-09-26",
+      "failureStreak": 24,
+      "lastFailureDate": "2026-09-26",
+      "lastError": "공휴일 규정 본문 확인 실패"
     },
     "kasiCalendar": {
       "url": "https://astro.kasi.re.kr/life/post/calendarData",
       "available": false,
-      "lastChecked": "2026-09-25",
-      "failureStreak": 23,
-      "lastFailureDate": "2026-09-25",
+      "lastChecked": "2026-09-26",
+      "failureStreak": 24,
+      "lastFailureDate": "2026-09-26",
       "lastError": "HTTP 500"
     }
   },
@@ -50,11 +50,11 @@
         "2026-06-06": "현충일",
         "2026-07-17": "제헌절"
       },
-      "lastChecked": "2026-09-25",
+      "lastChecked": "2026-09-26",
       "available": false,
       "lastError": "HTTP 500",
-      "almanacFailureStreak": 23,
-      "almanacLastFailureDate": "2026-09-25"
+      "almanacFailureStreak": 24,
+      "almanacLastFailureDate": "2026-09-26"
     },
     "2027": {
       "official": true,
@@ -88,14 +88,14 @@
         "2027-07-17": "제헌절",
         "2027-07-19": "대체공휴일(제헌절)"
       },
-      "lastChecked": "2026-09-25",
+      "lastChecked": "2026-09-26",
       "available": false,
       "lastError": "HTTP 500",
-      "almanacFailureStreak": 23,
-      "almanacLastFailureDate": "2026-09-25"
+      "almanacFailureStreak": 24,
+      "almanacLastFailureDate": "2026-09-26"
     },
     "2028": {
-      "lastChecked": "2026-09-25",
+      "lastChecked": "2026-09-26",
       "available": false,
       "lastError": "HTTP 500",
       "almanacFailureStreak": 0,
@@ -103,10 +103,11 @@
     }
   },
   "lastResult": {
-    "date": "2026-09-25",
+    "date": "2026-09-26",
     "autoApplied": [],
     "reviewRequired": true,
     "categories": [
+      "공식자료 확인 지속 실패",
       "공식자료 연결 지속 실패"
     ],
     "successfulYears": 0,
